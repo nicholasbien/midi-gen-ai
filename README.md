@@ -28,6 +28,9 @@ This codebase contains the code for fine-tuning a GPT2 model on text encodings o
 6. **train.py**
    - The main script for training machine learning models on MIDI datasets. It includes configurations for model parameters, training loops, and evaluation metrics.
 
+7. **ableton_data.py**
+   - This script crawls Ableton project directories and creates MIDI files for all MIDI clips present in the Ableton projects, which can then be used for fine-tuning or as prompting for generation.
+
 ### Setup Instructions
 
 1. **Clone the Repository**

@@ -12,7 +12,8 @@ A preprocessed version of this dataset (encoded as .txt files that can be passed
 
 A finetuned GPT2 model using this dataset is available [here](https://huggingface.co/nicholasbien/gpt2_finetuned-lmd_full). This is the model running at https://nicholasbien.io/midi.
 
-For more details on how this model was trained see the [Detailed design and next steps](https://github.com/nicholasbien/midi-gen-ai/edit/main/README.md#detailed-design-and-next-steps).
+For more details on how this model was trained see the [Detailed design and next steps](#detailed-design-and-next-steps)
+.
 
 ## File Descriptions
 

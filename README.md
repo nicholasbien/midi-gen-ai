@@ -93,17 +93,19 @@ You can also customize the remote worker by modifying the image and MidiGen clas
 
 1. **Clone the Repository**
    ```sh
-   git clone <repository_url>
-   cd <repository_directory>
+   git clone https://github.com/nicholasbien/midi-gen-ai.git
+   cd midi-gen-ai
    ```
 
-2. **Run the Setup Script**
+2. **Create a Virtual Environment**
+   ```sh
+   python -m venv env
+   ```
+   
+3. **Run the Setup Script**
    ```sh
    ./setup.sh
    ```
-
-3. **Login to Hugging Face CLI**
-   - Follow the instructions to login to your Hugging Face account, which is required for accessing some pre-trained models and datasets.
 
 ## Dependencies
 

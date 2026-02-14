@@ -1,6 +1,6 @@
 # MIDI Gen AI
 
-Demo at https://io.nicholasbien.com/midi.
+Demo at https://nicholasbien.com/midi.
 
 ## Overview
 

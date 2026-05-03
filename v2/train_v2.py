@@ -43,7 +43,7 @@ from v2.model_v2 import ModelConfig, MusicTransformer
 class TrainConfig:
     data_dir: Path
     out_dir: Path
-    size: str = "pilot"            # "pilot" or "production"
+    size: str = "pilot"            # "pilot" | "medium" | "production"
     batch_size: int = 16
     grad_accum: int = 4
     block_size: int = 1024
@@ -188,7 +188,14 @@ def train(cfg: TrainConfig) -> None:
     vocab_size = json.loads((cfg.data_dir / "manifest.json").read_text())["vocab_size"]
 
     # ---- model
-    model_cfg = ModelConfig.pilot(vocab_size) if cfg.size == "pilot" else ModelConfig.production(vocab_size)
+    if cfg.size == "pilot":
+        model_cfg = ModelConfig.pilot(vocab_size)
+    elif cfg.size == "medium":
+        model_cfg = ModelConfig.medium(vocab_size)
+    elif cfg.size == "production":
+        model_cfg = ModelConfig.production(vocab_size)
+    else:
+        raise ValueError(f"unknown size: {cfg.size}")
     model_cfg.max_seq_len = max(model_cfg.max_seq_len, cfg.block_size)
     model = MusicTransformer(model_cfg).to(device)
     print(f"[train] params={model.num_params()/1e6:.1f}M  vocab={vocab_size}")
@@ -268,7 +275,7 @@ def parse_args() -> TrainConfig:
     p = argparse.ArgumentParser()
     p.add_argument("--data", dest="data_dir", type=Path, required=True)
     p.add_argument("--out", dest="out_dir", type=Path, required=True)
-    p.add_argument("--size", choices=["pilot", "production"], default="pilot")
+    p.add_argument("--size", choices=["pilot", "medium", "production"], default="pilot")
     p.add_argument("--batch-size", type=int, default=16)
     p.add_argument("--grad-accum", type=int, default=4)
     p.add_argument("--block-size", type=int, default=1024)

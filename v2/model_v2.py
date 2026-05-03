@@ -49,6 +49,15 @@ class ModelConfig:
         )
 
     @classmethod
+    def medium(cls, vocab_size: int = 641) -> "ModelConfig":
+        # ~113M params: middle ground between pilot (25M) and production (200M).
+        return cls(
+            vocab_size=vocab_size,
+            d_model=768, n_layers=12, n_heads=12, d_ff=3072,
+            max_seq_len=2048,
+        )
+
+    @classmethod
     def production(cls, vocab_size: int = 641) -> "ModelConfig":
         return cls(
             vocab_size=vocab_size,

@@ -1,0 +1,22 @@
+# Build artifacts and venv
+__pycache__/
+*.pyc
+.venv/
+env/
+
+# Training and inference outputs
+runs/
+*.pt
+*.npy
+
+# Lambda credentials (never commit)
+.lambda_env
+
+# v2 working data dirs (keep paths, ignore contents)
+data/raw/
+data/manifest*.jsonl
+data/v2_corpus*/
+
+# Local OS clutter
+.DS_Store
+

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OpenMusicNet — A/B Grading</title>
+<script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0"></script>
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; max-width: 900px; margin: 24px auto; padding: 0 16px; color: #222; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .sub { color: #666; font-size: 13px; margin-bottom: 24px; }
+  .pair { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; background: #fafafa; }
+  .key { font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #444; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .opt { background: white; border: 1px solid #ddd; border-radius: 6px; padding: 12px; }
+  .opt h3 { margin: 0 0 8px 0; font-size: 14px; color: #555; font-weight: 500; }
+  midi-player { width: 100%; }
+  .pick { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  button { padding: 8px 14px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  button:hover { background: #f0f0f0; }
+  button.picked { background: #4f46e5; color: white; border-color: #4f46e5; }
+  .scalar { display: flex; gap: 4px; align-items: center; font-size: 12px; color: #666; }
+  .scalar input { width: 50px; padding: 4px; }
+  .status { margin-top: 8px; font-size: 12px; color: #888; }
+  .progress { font-size: 13px; color: #444; margin-bottom: 12px; }
+  .reveal { font-size: 12px; color: #888; margin-top: 6px; }
+  .submitted { background: #ecfdf5; border-color: #10b981; }
+</style>
+</head>
+<body>
+  <h1>OpenMusicNet — A/B grading</h1>
+  <div class="sub">Pick which continuation sounds better. Optional 1–5 scalar for absolute quality.</div>
+  <div class="progress" id="progress">loading…</div>
+  <div id="pairs"></div>
+
+<script>
+const SESSION_ID = crypto.randomUUID();
+let manifest = null;
+let submitted = 0;
+
+async function load() {
+  const res = await fetch('/api/manifest');
+  manifest = await res.json();
+  document.getElementById('progress').textContent =
+    `${manifest.items.length} pairs · ${manifest.label_a} vs ${manifest.label_b}`;
+  render();
+}
+
+function render() {
+  const root = document.getElementById('pairs');
+  root.innerHTML = '';
+  manifest.items.forEach((it, idx) => {
+    const card = document.createElement('div');
+    card.className = 'pair';
+    card.dataset.idx = idx;
+    card.innerHTML = `
+      <div class="key">${it.key}</div>
+      <div class="row">
+        <div class="opt">
+          <h3>Option A</h3>
+          <midi-player src="${it.left_url}" sound-font></midi-player>
+          <div class="scalar"><label>quality 1–5: <input type="number" min="1" max="5" data-side="left"></label></div>
+        </div>
+        <div class="opt">
+          <h3>Option B</h3>
+          <midi-player src="${it.right_url}" sound-font></midi-player>
+          <div class="scalar"><label>quality 1–5: <input type="number" min="1" max="5" data-side="right"></label></div>
+        </div>
+      </div>
+      <div class="pick">
+        <button data-pick="left">A is better</button>
+        <button data-pick="tie">Tie</button>
+        <button data-pick="right">B is better</button>
+        <span class="status"></span>
+      </div>
+      <div class="reveal" style="display:none"></div>
+    `;
+    card.querySelectorAll('button[data-pick]').forEach(btn => {
+      btn.addEventListener('click', () => submit(idx, btn.dataset.pick, card));
+    });
+    root.appendChild(card);
+  });
+}
+
+async function submit(idx, side, card) {
+  const it = manifest.items[idx];
+  const buttons = card.querySelectorAll('button[data-pick]');
+  buttons.forEach(b => b.classList.remove('picked'));
+  card.querySelector(`button[data-pick="${side}"]`).classList.add('picked');
+
+  const preferred_model =
+    side === 'left' ? it.left_model :
+    side === 'right' ? it.right_model : 'tie';
+
+  const scalar_left = card.querySelector('input[data-side="left"]').value || '';
+  const scalar_right = card.querySelector('input[data-side="right"]').value || '';
+
+  const body = {
+    session_id: SESSION_ID,
+    pair_key: it.key,
+    left_model: it.left_model,
+    right_model: it.right_model,
+    preferred_side: side,
+    preferred_model,
+    scalar_left, scalar_right,
+  };
+  try {
+    const res = await fetch('/api/preference', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if (!res.ok) throw new Error(await res.text());
+    card.classList.add('submitted');
+    card.querySelector('.status').textContent = 'recorded';
+    const reveal = card.querySelector('.reveal');
+    reveal.style.display = 'block';
+    reveal.textContent = `(A=${it.left_model}, B=${it.right_model})`;
+    submitted++;
+    document.getElementById('progress').textContent =
+      `${submitted}/${manifest.items.length} graded · ${manifest.label_a} vs ${manifest.label_b}`;
+  } catch (e) {
+    card.querySelector('.status').textContent = 'error: ' + e.message;
+  }
+}
+
+load();
+</script>
+</body>
+</html>

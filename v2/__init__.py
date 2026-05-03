@@ -8,8 +8,8 @@ Public surface:
 - `list_hub_versions`     list available model subfolders on the HF repo
 """
 
-from v2.generate_v2 import V2Generator, Note
-from v2.hub import (
+from .generate_v2 import V2Generator, Note
+from .hub import (
     load_v2_from_hub,
     download_v2_files,
     list_hub_versions,

@@ -20,7 +20,7 @@ Adding a new version = upload to a new subfolder; nothing in this file needs
 to change. Users select via:
 
 ```python
-from v2.hub import load_v2_from_hub, list_hub_versions
+from midigenai import load_v2_from_hub, list_hub_versions
 
 # default — picks up MIDIGENAI_VERSION env var if set, else DEFAULT_VERSION
 gen = load_v2_from_hub()
@@ -63,7 +63,7 @@ def load_v2_from_hub(
     `version` defaults to `MIDIGENAI_VERSION` env var, then `DEFAULT_VERSION`.
     `repo_id` defaults to `MIDIGENAI_REPO_ID` env var, then `DEFAULT_REPO`.
     """
-    from v2.generate_v2 import V2Generator
+    from .generate_v2 import V2Generator
     ckpt, tok = download_v2_files(version=version, repo_id=repo_id, revision=revision)
     return V2Generator(checkpoint_path=ckpt, tokenizer_path=tok, **generator_kwargs)
 

@@ -17,8 +17,8 @@ from typing import Iterator
 
 import torch
 
-from v2.model_v2 import ModelConfig, MusicTransformer
-from v2.tokenizer_v2 import build_tokenizer, load_tokenizer
+from .model_v2 import ModelConfig, MusicTransformer
+from .tokenizer_v2 import build_tokenizer, load_tokenizer
 
 
 def _auto_device() -> torch.device:

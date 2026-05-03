@@ -45,6 +45,8 @@ grading = ["flask"]
 Homepage = "https://github.com/nicholasbien/midi-gen-ai"
 Model = "https://huggingface.co/nicholasbien/midigenai"
 
-[tool.setuptools.packages.find]
-include = ["v2*"]
-exclude = ["v2.data*", "v2.templates*", "v2.static*"]
+[tool.setuptools]
+# The on-disk package is `v2/` but we expose it as `midigenai` so callers
+# can do `from midigenai import V2Generator, load_v2_from_hub`.
+package-dir = { "midigenai" = "v2" }
+packages = ["midigenai"]

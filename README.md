@@ -86,7 +86,54 @@ midi-gen-ai/
 
 ## v2 quickstart
 
-### Generate from a prompt
+### Use a published model from anywhere (`pip install`)
+
+The latest trained checkpoint is published at
+[huggingface.co/nicholasbien/midigenai](https://huggingface.co/nicholasbien/midigenai).
+Install the package and pull the model from there:
+
+```bash
+pip install git+https://github.com/nicholasbien/midi-gen-ai
+```
+
+```python
+from midigenai import load_v2_from_hub, list_hub_versions
+
+list_hub_versions()                       # ['v2-pilot', ...]
+gen = load_v2_from_hub()                  # default version
+gen = load_v2_from_hub(version="v2")      # pin to a specific subfolder
+
+prompt = gen.encode_midi_file("seed.mid")
+gen.generate_to_midi(prompt, "out.mid", tempo_bpm=80, max_new_tokens=512)
+```
+
+Files are cached at `~/.cache/huggingface/` after the first call. The default
+version comes from `MIDIGENAI_VERSION` env var, then falls back to
+`DEFAULT_VERSION` in `v2/hub.py`. To change the default for a shell session:
+
+```bash
+export MIDIGENAI_VERSION=v2
+```
+
+#### Publishing a new model
+
+The HF repo is laid out as one subfolder per trained checkpoint:
+
+```
+nicholasbien/midigenai/
+├── v2-pilot/        ← current default
+│   ├── ckpt_final.pt
+│   └── tokenizer.json
+└── v2/              ← future
+    └── ...
+```
+
+To release a new version, upload `ckpt_final.pt` + `tokenizer.json` to a new
+subfolder. `list_hub_versions()` auto-discovers it. Either bump
+`DEFAULT_VERSION` in `v2/hub.py` for a permanent default change, or have
+callers set `MIDIGENAI_VERSION` themselves.
+
+### Generate from a prompt (local checkpoint)
 
 ```bash
 python -m v2.generate_v2 \

@@ -66,7 +66,7 @@ v2 is **~8x faster than v1 in actual notes/sec on CPU** (smaller model + 2x more
 ## Repo layout
 
 ```
-midi-gen-ai/
+midigenai/
 ├─ convert.py            # v1: MIDI ↔ condensed text encoding
 ├─ dataset.py            # v1: HuggingFace dataset prep
 ├─ train.py              # v1: GPT-2 finetune
@@ -102,7 +102,7 @@ The latest trained checkpoint is published at
 Install the package and pull the model from there:
 
 ```bash
-pip install git+https://github.com/nicholasbien/midi-gen-ai
+pip install git+https://github.com/nicholasbien/midigenai
 ```
 
 ```python
@@ -198,8 +198,8 @@ python -m v2.lambda_provision wait <instance-id>
 
 # 4. SSH in and run the bootstrap (downloads data, cleans, tokenizes, trains in tmux)
 ssh ubuntu@<ip>
-git clone https://github.com/nicholasbien/midi-gen-ai.git
-cd midi-gen-ai
+git clone https://github.com/nicholasbien/midigenai.git
+cd midigenai
 SIZE=pilot MAX_STEPS=5000 bash v2/setup_lambda.sh
 ```
 
@@ -292,8 +292,8 @@ Modal-backed inference (`gpu="any"`). Streams text completions and prints them. 
 ## Setup
 
 ```bash
-git clone https://github.com/nicholasbien/midi-gen-ai.git
-cd midi-gen-ai
+git clone https://github.com/nicholasbien/midigenai.git
+cd midigenai
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```

@@ -42,7 +42,7 @@ eval = ["muspy"]
 grading = ["flask"]
 
 [project.urls]
-Homepage = "https://github.com/nicholasbien/midi-gen-ai"
+Homepage = "https://github.com/nicholasbien/midigenai"
 Model = "https://huggingface.co/nicholasbien/midigenai"
 
 [tool.setuptools]

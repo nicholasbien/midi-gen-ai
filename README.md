@@ -4,16 +4,25 @@ Fine-tuning transformers on text encodings of MIDI files, generating new music w
 
 Demo at https://nicholasbien.com/midi.
 
-The repo now ships **two model generations side by side**: v1 (the original GPT-2 fine-tune) and v2 (a custom small transformer trained from scratch with event-based tokenization). The v2 model produces meaningfully better music while being 5x smaller and several times faster at inference.
+The repo ships **two model generations side by side**: v1 (the original GPT-2 fine-tune) and v2 (custom transformers trained from scratch with event-based tokenization). The v2 line is what's currently serving https://nicholasbien.com/midi.
+
+## Available checkpoints
+
+| Tag | Params | Training data | Final loss | Best temp | HF |
+|---|---|---|---|---|---|
+| `v1` | 124M (GPT-2) | Lakh full | — | t=1.2, top_k=10 | [nicholasbien/gpt2_finetuned-lmd_full](https://huggingface.co/nicholasbien/gpt2_finetuned-lmd_full) |
+| `v2-pilot` | 25M | Lakh + curated (~158k files, 2.5B tokens) | 0.97 | t=1.0, top_k=50 | (local-only) |
+| `v2-prod` | 25M | + LAMD (~408k files, ~8B tokens) | 0.93 | t=1.0, top_k=50 | (local-only) |
+| **`v2-100m`** ← live | **113M** | + LAMD (~408k files) | **0.71** | **t=1.2, top_k=50** | [nicholasbien/midigenai/v2-100m](https://huggingface.co/nicholasbien/midigenai/tree/main/v2-100m) |
 
 ---
 
 ## v1 → v2 at a glance
 
-| | v1 | v2 |
+| | v1 | v2 (current: 113M) |
 |---|---|---|
 | Base model | GPT-2 (HuggingFace fine-tune) | Custom GPT-style transformer (from scratch) |
-| Parameters | 124M | **25M** |
+| Parameters | 124M | **113M** |
 | Vocabulary | GPT-2 BPE (50,257) | Custom event vocab (**641**) |
 | Tokenization | BPE on `pitch_start_dur_vel` text | [MidiTok MIDILike](https://github.com/Natooz/MidiTok) (event-based) |
 | Tokens per note | ~6–10 | **~4** |
